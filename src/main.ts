@@ -1,9 +1,9 @@
 import './style.css';
-import { Board } from './Board';
-import { BoardRenderer } from './BoardRenderer';
-import { NextTile } from './NextTile';
-import { getColor } from './utils/getColor';
-import { GameController } from './GameController';
+import { Board } from './models/board';
+import { BoardRenderer } from './models/board-renderer';
+import { NextTile } from './models/next-tile';
+import { getColor } from './utils/get-color';
+import { GameController } from './models/game-controller';
 
 const boardEl = document.getElementById('board') as HTMLDivElement;
 const nextTileEl = document.getElementById('next-tile') as HTMLDivElement;
@@ -29,9 +29,10 @@ let dropX = 0;
 let dropY = 0;
 
 nextTileEl.addEventListener('dragend', (e) => {
+    console.log(e);
     dropX = boardRenderer.dopedTile?.dataset.col ? parseInt(boardRenderer.dopedTile.dataset.col) : 0;
     dropY = boardRenderer.dopedTile?.parentElement?.dataset.row ? parseInt(boardRenderer.dopedTile.parentElement.dataset.row) : 0;
-    gameController.updateTile(dropY, dropX, parseInt(nextTileEl.textContent!));
+    gameController.addTile({row: dropY, col: dropX}, parseInt(nextTileEl.textContent!));
     updateNextTileDisplay();
 });
 

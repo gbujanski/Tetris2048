@@ -1,5 +1,5 @@
-import type { ITile } from './TileInterface';
-import { getColor } from './utils/getColor';
+import type { ITile } from '../interfaces/tile.interface';
+import { getColor } from '../utils/get-color';
 
 export class Tile implements ITile {
   private _value: number;
