@@ -23,20 +23,20 @@ export class BoardRenderer implements IBoardRenderer {
     return this._dopedTile;
   }
 
-  public updateBoard(boardActions: IboardActions[]): void {
-    boardActions.forEach((boardAction: IboardActions) => {
+  public async updateBoard(boardActions: IboardActions[]): Promise<void> {
+   for (const boardAction of boardActions) {
       switch (boardAction.action) {
         case action.Add:
           this.addTile(boardAction);
           break;
         case action.Move:
-          this.moveTile(boardAction);
+          await this.editTile(boardAction);
           break;
         case action.Merge:
-          this.mergeTiles(boardAction);
+          await this.editTile(boardAction);
           break;
       }
-    })
+    }
   }
 
   public reset(): void {
@@ -47,14 +47,35 @@ export class BoardRenderer implements IBoardRenderer {
     this._boardEl.children[action.to.row].children[action.to.col].textContent = action.value.toString();
   }
 
-  private moveTile(action: IboardMoveAction): void {
-    this._boardEl.children[action.to.row].children[action.to.col].textContent = this._boardEl.children[action.from.row].children[action.from.col].textContent;
-    this._boardEl.children[action.from.row].children[action.from.col].textContent = '';
-  }
+  private async editTile(action: IboardMoveAction | IboardMergeAction): Promise<void> {
+    const fromTile = this._boardEl.children[action.from.row].children[action.from.col];
+    const toTile = this._boardEl.children[action.to.row].children[action.to.col];
+    const fromTileValue = fromTile.textContent;
 
-  private mergeTiles(action: IboardMergeAction): void {
-    this._boardEl.children[action.to.row].children[action.to.col].textContent = action.value.toString();
-    this._boardEl.children[action.from.row].children[action.from.col].textContent = '';
+    if (fromTile.textContent !== '') {
+      const tempElement = fromTile.cloneNode(true) as HTMLDivElement;
+      const destinationTileRect = toTile.getBoundingClientRect();
+      const sourceTileRect = fromTile.getBoundingClientRect();
+
+      tempElement.style.left = `${sourceTileRect.left}px`;
+      tempElement.style.top = `${sourceTileRect.top}px`;
+      tempElement.style.position = 'absolute';
+      tempElement.style.zIndex = '1000';
+      tempElement.style.transition = 'left 0.3s ease, top 0.3s ease';
+
+      this._boardEl.appendChild(tempElement);
+      // Force reflow to ensure the initial position is applied
+      tempElement.getBoundingClientRect();
+
+      tempElement.style.left = `${destinationTileRect.left}px`;
+      tempElement.style.top = `${destinationTileRect.top}px`;
+      fromTile.textContent = '';
+    
+      await new Promise(resolve => setTimeout(resolve, 300));
+      tempElement.remove();
+    }
+    
+    toTile.textContent = action.action === 'move' ? fromTileValue : action.value.toString();
   }
 
   private generateBoardStructure(): void {

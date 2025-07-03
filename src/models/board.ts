@@ -119,9 +119,9 @@ export class Board implements IBoard {
   private updateTileData(action: IboardActions): void {
     this.boardActions.push({ ...action });
 
+    if (action.action === 'move') this._tiles[action.to.row][action.to.col].value = this._tiles[action.from.row][action.from.col].value;
     if (action.action !== 'move') this._tiles[action.to.row][action.to.col].value = action.value;
     if (action.action !== 'add') this._tiles[action.from.row][action.from.col].value = 0;
-    if (action.action === 'move') this._tiles[action.to.row][action.to.col].value = this._tiles[action.from.row][action.from.col].value;
 
     console.log(`check tile at (${action.to.row}, ${action.to.col}) for next step`);
     this.tilesToCheckInNextStep.push(action.to);
@@ -146,6 +146,7 @@ export class Board implements IBoard {
           value: this._tiles[row][col].value * 2,
           from: cords
         });
+        this.colsToUpdate.push(col);
       } else if (this.isLeftTileHaveSameValue(cords)) {
         this.updateTileData({
           action: action.Merge,
@@ -153,13 +154,15 @@ export class Board implements IBoard {
           value: this._tiles[row][col].value * 2,
           from: cords
         });
+        this.colsToUpdate.push(col);
       } else if (this.isRightTileHaveSameValue(cords)) {
         this.updateTileData({
           action: action.Merge,
-          to: { row, col: col + 1 },
+          to: cords,
           value: this._tiles[row][col].value * 2,
-          from: cords
+          from: { row, col: col + 1 }
         });
+        this.colsToUpdate.push(col + 1);
       } else if (this.isBottomTileHaveSameValue(cords)) {
         this.updateTileData({
           action: action.Merge,
@@ -167,7 +170,9 @@ export class Board implements IBoard {
           value: this._tiles[row][col].value * 2,
           from: cords
         });
+        this.colsToUpdate.push(col);
       }
+      
     });
 
     console.log(`tiles values after merge:`, this._tiles.map(row => row.map(tile => tile.value)));
