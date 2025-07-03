@@ -20,7 +20,9 @@ const nextTileInstance = new NextTile();
 function updateNextTileDisplay() {
     const nextTileValue = nextTileInstance.getNextTileValue(board.higestTileValue);
     nextTileEl.textContent = nextTileValue.toString();
-    nextTileEl.style.backgroundColor = getColor(nextTileValue);
+    const color = getColor(nextTileValue);
+    nextTileEl.style.backgroundColor = color.bg;
+    nextTileEl.style.color = color.text;
 }
 
 updateNextTileDisplay();

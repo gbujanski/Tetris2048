@@ -2,6 +2,7 @@ import type { IBoard } from "../interfaces/board.interface";
 import type { IBoardRenderer } from "../interfaces/board-renderer.interface";
 import type { IboardActions, IboardAddAction, IboardMergeAction, IboardMoveAction } from "../interfaces/board-actions.interface";
 import { action } from "../enums/board-action.enum";
+import { getColor } from "../utils/get-color";
 
 export class BoardRenderer implements IBoardRenderer {
   private _boardEl: HTMLDivElement;
@@ -44,12 +45,17 @@ export class BoardRenderer implements IBoardRenderer {
   }
 
   private addTile(action: IboardAddAction): void {
-    this._boardEl.children[action.to.row].children[action.to.col].textContent = action.value.toString();
+    const tileEl = this._boardEl.children[action.to.row].children[action.to.col] as HTMLDivElement;
+    const color = getColor(action.value);
+    
+    tileEl.textContent = action.value.toString();
+    tileEl.style.backgroundColor = color.bg;
+    tileEl.style.color = color.text;
   }
 
   private async editTile(action: IboardMoveAction | IboardMergeAction): Promise<void> {
-    const fromTile = this._boardEl.children[action.from.row].children[action.from.col];
-    const toTile = this._boardEl.children[action.to.row].children[action.to.col];
+    const fromTile = this._boardEl.children[action.from.row].children[action.from.col] as HTMLDivElement;
+    const toTile = this._boardEl.children[action.to.row].children[action.to.col] as HTMLDivElement;
     const fromTileValue = fromTile.textContent;
 
     if (fromTile.textContent !== '') {
@@ -70,12 +76,19 @@ export class BoardRenderer implements IBoardRenderer {
       tempElement.style.left = `${destinationTileRect.left}px`;
       tempElement.style.top = `${destinationTileRect.top}px`;
       fromTile.textContent = '';
-    
+      fromTile.style.backgroundColor = '';
+
       await new Promise(resolve => setTimeout(resolve, 300));
       tempElement.remove();
     }
-    
+
     toTile.textContent = action.action === 'move' ? fromTileValue : action.value.toString();
+
+    if (toTile.textContent) {
+      const color = getColor(parseInt(toTile.textContent));
+      toTile.style.backgroundColor = color.bg;
+      toTile.style.color = color.text;
+    }
   }
 
   private generateBoardStructure(): void {
