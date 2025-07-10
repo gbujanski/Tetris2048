@@ -4,7 +4,6 @@ import type { ICoords } from './cords.interface';
 
 export interface IBoard {
   get tiles(): ITile[][];
-  get higestTileValue(): number;
   addTile(cords: ICoords, value: number): IboardActions[];
   reset(): void;
 }

@@ -4,13 +4,11 @@ import { getColor } from '../utils/get-color';
 export class Tile implements ITile {
   private _value: number;
 
-  constructor(
-    value: number = 0
-  ) {
+  constructor(value: number = 0) {
     this._value = value;
   }
 
-  public get color(): string {
+  public get color(): { bg: string, text: string } {
     return getColor(this.value);
   }
 

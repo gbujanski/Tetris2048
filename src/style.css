@@ -73,6 +73,13 @@ body {
   margin-top: 20px;
 }
 
+#next-tile.dragging {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
 .hovered {
   background-color: #555;
 }

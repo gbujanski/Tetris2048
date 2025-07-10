@@ -4,26 +4,24 @@ import type { ICoords } from "../interfaces/cords.interface";
 import type { IboardActions } from "../interfaces/board-actions.interface";
 import { Tile } from "../models/tile";
 import { action } from '../enums/board-action.enum';
-
+import { State } from "../state";
 export class Board implements IBoard {
+  private state = State.getInstance();
   private _tiles: ITile[][];
   private boardActions: IboardActions[] = [];
   private tilesToCheckInNextStep: ICoords[] = [];
   private colsToUpdate: number[] = [];
 
-
   constructor(sizeX: number, sizeY: number) {
-    this._tiles = Array.from({ length: sizeY }, () =>
-      Array.from({ length: sizeX }, () => new Tile(0))
-    );
+    if (this.state.has('board')) {
+      this._tiles = this.generateBoardFromState();
+    } else {
+      this._tiles = this.generateEmptyBoard(sizeX, sizeY);
+    }
   }
 
   public get tiles(): ITile[][] {
     return this._tiles;
-  }
-
-  public get higestTileValue(): number {
-    return Math.max(...this._tiles.flat().map(tile => tile.value));
   }
 
   public reset(): void {
@@ -76,6 +74,8 @@ export class Board implements IBoard {
 
     this.checkForMerge();
 
+    this.state.set('board', this._tiles.map(row => row.map(tile => tile.value)));
+
     return this.boardActions;
   }
 
@@ -116,29 +116,24 @@ export class Board implements IBoard {
     return -1; // No filled tile found in the column
   }
 
-  private updateTileData(action: IboardActions): void {
-    this.boardActions.push({ ...action });
+  private updateTileData(boardAction: IboardActions): void {
+    this.boardActions.push({ ...boardAction });
 
-    if (action.action === 'move') this._tiles[action.to.row][action.to.col].value = this._tiles[action.from.row][action.from.col].value;
-    if (action.action !== 'move') this._tiles[action.to.row][action.to.col].value = action.value;
-    if (action.action !== 'add') this._tiles[action.from.row][action.from.col].value = 0;
+    if (boardAction.action === action.Move) this._tiles[boardAction.to.row][boardAction.to.col].value = this._tiles[boardAction.from.row][boardAction.from.col].value;
+    if (boardAction.action !== action.Move) this._tiles[boardAction.to.row][boardAction.to.col].value = boardAction.value;
+    if (boardAction.action !== action.Add) this._tiles[boardAction.from.row][boardAction.from.col].value = 0;
 
-    console.log(`check tile at (${action.to.row}, ${action.to.col}) for next step`);
-    this.tilesToCheckInNextStep.push(action.to);
+    this.tilesToCheckInNextStep.push(boardAction.to);
   }
 
   private checkForMerge(): void {
     if (this.tilesToCheckInNextStep.length === 0) return;
     const tilesToCheckInNextStep = [...this.tilesToCheckInNextStep];
     this.tilesToCheckInNextStep = [];
-    console.log('Checking for merges...');
-    console.log(`tiles values before merge:`, this._tiles.map(row => row.map(tile => tile.value)));
 
     tilesToCheckInNextStep.forEach(cords => {
       const { row, col } = cords;
-      console.log(`tiles value at (${row}, ${col}):`, `${this._tiles[row][col].value}`);
       if (this._tiles[row][col].value === 0) return;
-      console.log(`Checking tile at (${row}, ${col}) for merges...`);
       if (this.isTopTileHaveSameValue(cords)) {
         this.updateTileData({
           action: action.Merge,
@@ -175,8 +170,6 @@ export class Board implements IBoard {
       
     });
 
-    console.log(`tiles values after merge:`, this._tiles.map(row => row.map(tile => tile.value)));
-
     this.moveTileIfTopTileIsEmpty();
   }
 
@@ -200,6 +193,17 @@ export class Board implements IBoard {
 
     this.colsToUpdate = [];
     this.checkForMerge();
+  }
+
+  private generateBoardFromState(): Tile[][] {
+    const rawBoard: number[][] = this.state.get('board');
+    return rawBoard.map(row => row.map(tileValue => new Tile(tileValue)));
+  }
+
+  private generateEmptyBoard(sizeX: number, sizeY: number): Tile[][] {
+    return Array.from({ length: sizeY }, () =>
+      Array.from({ length: sizeX }, () => new Tile(0))
+    );
   }
 }
 

@@ -3,25 +3,16 @@ import type { IBoardRenderer } from "../interfaces/board-renderer.interface";
 import type { IboardActions, IboardAddAction, IboardMergeAction, IboardMoveAction } from "../interfaces/board-actions.interface";
 import { action } from "../enums/board-action.enum";
 import { getColor } from "../utils/get-color";
+import { Tile } from "./tile";
 
 export class BoardRenderer implements IBoardRenderer {
-  private _boardEl: HTMLDivElement;
   private _board: IBoard;
-  private _dopedTile: HTMLDivElement | null = null;
-
+  private _boardEl: HTMLDivElement;
 
   constructor(board: IBoard, boardEl: HTMLDivElement) {
     this._board = board;
     this._boardEl = boardEl;
     this.generateBoardStructure();
-  }
-
-  public get boardEl(): HTMLDivElement {
-    return this._boardEl;
-  }
-
-  public get dopedTile(): HTMLDivElement | null {
-    return this._dopedTile;
   }
 
   public async updateBoard(boardActions: IboardActions[]): Promise<void> {
@@ -42,23 +33,25 @@ export class BoardRenderer implements IBoardRenderer {
 
   public reset(): void {
     this._boardEl.innerHTML = '';
+    this.generateBoardStructure();
   }
 
-  private addTile(action: IboardAddAction): void {
-    const tileEl = this._boardEl.children[action.to.row].children[action.to.col] as HTMLDivElement;
-    const color = getColor(action.value);
-    
-    tileEl.textContent = action.value.toString();
-    tileEl.style.backgroundColor = color.bg;
-    tileEl.style.color = color.text;
+  private addTile(addAction: IboardAddAction): void {
+    const tileEl = this._boardEl.children[addAction.to.row].children[addAction.to.col] as HTMLDivElement;
+    const newTile = new Tile(addAction.value);
+
+    tileEl.textContent = newTile.value.toString();
+    tileEl.style.backgroundColor = newTile.color.bg;
+    tileEl.style.color = newTile.color.text;
   }
 
-  private async editTile(action: IboardMoveAction | IboardMergeAction): Promise<void> {
-    const fromTile = this._boardEl.children[action.from.row].children[action.from.col] as HTMLDivElement;
-    const toTile = this._boardEl.children[action.to.row].children[action.to.col] as HTMLDivElement;
+  private async editTile(moveOrMergeAction: IboardMoveAction | IboardMergeAction): Promise<void> {
+    const fromTile = this._boardEl.children[moveOrMergeAction.from.row].children[moveOrMergeAction.from.col] as HTMLDivElement;
+    const toTile = this._boardEl.children[moveOrMergeAction.to.row].children[moveOrMergeAction.to.col] as HTMLDivElement;
     const fromTileValue = fromTile.textContent;
 
     if (fromTile.textContent !== '') {
+      // update with animation
       const tempElement = fromTile.cloneNode(true) as HTMLDivElement;
       const destinationTileRect = toTile.getBoundingClientRect();
       const sourceTileRect = fromTile.getBoundingClientRect();
@@ -82,7 +75,7 @@ export class BoardRenderer implements IBoardRenderer {
       tempElement.remove();
     }
 
-    toTile.textContent = action.action === 'move' ? fromTileValue : action.value.toString();
+    toTile.textContent = moveOrMergeAction.action === action.Move ? fromTileValue : moveOrMergeAction.value.toString();
 
     if (toTile.textContent) {
       const color = getColor(parseInt(toTile.textContent));
@@ -97,34 +90,23 @@ export class BoardRenderer implements IBoardRenderer {
       rowEl.className = 'row';
       rowEl.dataset.row = i.toString();
 
-      row.forEach((_, i) => {
+      row.forEach((tile, i) => {
         const tileEl = document.createElement('div');
         tileEl.className = 'tile';
         tileEl.dataset.col = i.toString();
-        this.bindEvents(tileEl);
+
+        if (tile.value !== 0) {
+          const newTile = new Tile(tile.value);
+          
+          tileEl.textContent = newTile.value.toString();
+          tileEl.style.backgroundColor = newTile.color.bg;
+          tileEl.style.color = newTile.color.text;
+        }
+
         rowEl.appendChild(tileEl);
       });
 
       this._boardEl.appendChild(rowEl);
-    });
-  }
-
-  private bindEvents(tileEl: HTMLDivElement): void {
-    tileEl.addEventListener('dragenter', () => {
-      tileEl.classList.add('hovered');
-    });
-
-    tileEl.addEventListener('dragleave', () => {
-      tileEl.classList.remove('hovered');
-    });
-
-    tileEl.addEventListener('dragover', (e) => {
-      e.preventDefault();
-    });
-
-    tileEl.addEventListener('drop', () => {
-      tileEl.classList.remove('hovered');
-      this._dopedTile = tileEl;
     });
   }
 }
