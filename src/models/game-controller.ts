@@ -15,10 +15,10 @@ export class GameController {
     this.subscribeForFutureChanges();
   }
 
-  private resetGame(): void {
-    this.board.reset();
-    this.renderer.reset();
-  }
+  // private resetGame(): void {
+  //   this.board.reset();
+  //   this.renderer.reset();
+  // }
 
   private addTile(cords: ICoords, value: number): void {
     const boardActions = this.board.addTile(cords, value);
