@@ -4,7 +4,6 @@ export class State {
   private listeners: Map<string, Set<(value: any, prevValue: any) => void>>;
 
   private constructor() {
-    console.log('Initializing State');
     this.state = new Map();
     this.listeners = new Map();
     this.loadStateFromLocalStorage();

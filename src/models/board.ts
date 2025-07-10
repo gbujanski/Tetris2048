@@ -201,9 +201,11 @@ export class Board implements IBoard {
   }
 
   private generateEmptyBoard(sizeX: number, sizeY: number): Tile[][] {
-    return Array.from({ length: sizeY }, () =>
+    const board = Array.from({ length: sizeY }, () =>
       Array.from({ length: sizeX }, () => new Tile(0))
     );
+    this.state.set('board', board.map(row => row.map(tile => tile.value)));
+    return board;
   }
 }
 
