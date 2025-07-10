@@ -23,9 +23,9 @@ export class NextTileRenderer implements INextTileRenderer {
     this.state.set('nextTile', nextTileValue);
     const newTile = new Tile(nextTileValue);
 
-    this.nextTileEl.textContent = newTile.value.toString();
-    this.nextTileEl.style.backgroundColor = newTile.color.bg;
-    this.nextTileEl.style.color = newTile.color.text;
+    this.nextTileEl.textContent = newTile.displayValue;
+    this.nextTileEl.style.backgroundColor = newTile.bgColor;
+    this.nextTileEl.style.color = newTile.textColor;
   }
 
   private getNextTileValue(): number {

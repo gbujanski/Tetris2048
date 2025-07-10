@@ -2,7 +2,6 @@ import type { IBoard } from "../interfaces/board.interface";
 import type { IBoardRenderer } from "../interfaces/board-renderer.interface";
 import type { IboardActions, IboardAddAction, IboardMergeAction, IboardMoveAction } from "../interfaces/board-actions.interface";
 import { action } from "../enums/board-action.enum";
-import { getColor } from "../utils/get-color";
 import { Tile } from "./tile";
 
 export class BoardRenderer implements IBoardRenderer {
@@ -40,15 +39,15 @@ export class BoardRenderer implements IBoardRenderer {
     const tileEl = this._boardEl.children[addAction.to.row].children[addAction.to.col] as HTMLDivElement;
     const newTile = new Tile(addAction.value);
 
-    tileEl.textContent = newTile.value.toString();
-    tileEl.style.backgroundColor = newTile.color.bg;
-    tileEl.style.color = newTile.color.text;
+    tileEl.textContent = newTile.displayValue;
+    tileEl.style.backgroundColor = newTile.bgColor;
+    tileEl.style.color = newTile.textColor;
   }
 
   private async editTile(moveOrMergeAction: IboardMoveAction | IboardMergeAction): Promise<void> {
     const fromTile = this._boardEl.children[moveOrMergeAction.from.row].children[moveOrMergeAction.from.col] as HTMLDivElement;
     const toTile = this._boardEl.children[moveOrMergeAction.to.row].children[moveOrMergeAction.to.col] as HTMLDivElement;
-    const fromTileValue = fromTile.textContent;
+    const fromTileValue = this._board.tiles[moveOrMergeAction.from.row][moveOrMergeAction.from.col].displayValue;
 
     if (fromTile.textContent !== '') {
       // update with animation
@@ -75,12 +74,12 @@ export class BoardRenderer implements IBoardRenderer {
       tempElement.remove();
     }
 
-    toTile.textContent = moveOrMergeAction.action === action.Move ? fromTileValue : moveOrMergeAction.value.toString();
+    toTile.textContent = moveOrMergeAction.action === action.Move ? fromTileValue : new Tile(moveOrMergeAction.value).displayValue;
 
     if (toTile.textContent) {
-      const color = getColor(parseInt(toTile.textContent));
-      toTile.style.backgroundColor = color.bg;
-      toTile.style.color = color.text;
+      const tile = new Tile(parseInt(toTile.textContent));
+      toTile.style.backgroundColor = tile.bgColor;
+      toTile.style.color = tile.textColor;
     }
   }
 
@@ -98,9 +97,9 @@ export class BoardRenderer implements IBoardRenderer {
         if (tile.value !== 0) {
           const newTile = new Tile(tile.value);
           
-          tileEl.textContent = newTile.value.toString();
-          tileEl.style.backgroundColor = newTile.color.bg;
-          tileEl.style.color = newTile.color.text;
+          tileEl.textContent = newTile.displayValue;
+          tileEl.style.backgroundColor = newTile.bgColor;
+          tileEl.style.color = newTile.textColor;
         }
 
         rowEl.appendChild(tileEl);
