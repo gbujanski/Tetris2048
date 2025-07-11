@@ -10,8 +10,12 @@
       <p>Tetris2048</p>
       <div id="board"></div>
       <div>
-        <div><span>Next element</span><div id="next-tile"></div></div>
+        <div class="next-tile-container">
+          <span>Next element</span>
+          <div id="next-tile"></div>
+        </div>
         <p><span>Score: </span><span id="score">0</span></p>
+        <button class="btn" id="reset-btn">Reset</button>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

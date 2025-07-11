@@ -13,12 +13,13 @@ export class GameController {
     this.renderer = renderer;
 
     this.subscribeForFutureChanges();
+    this.onResetButtonClick();
   }
 
-  // private resetGame(): void {
-  //   this.board.reset();
-  //   this.renderer.reset();
-  // }
+  private reset(): void {
+    this.board.reset();
+    this.renderer.reset();
+  }
 
   private addTile(cords: ICoords, value: number): void {
     const boardActions = this.board.addTile(cords, value);
@@ -32,6 +33,13 @@ export class GameController {
       const droppedTileValue = parseInt(this.state.get('nextTile'));
       
       this.addTile({ row, col }, droppedTileValue);
+    });
+  }
+
+  private onResetButtonClick(): void {
+    const resetButton = document.getElementById('reset-btn') as HTMLButtonElement;
+    resetButton.addEventListener('click', () => {
+      this.reset();
     });
   }
 }

@@ -26,6 +26,7 @@ export class Board implements IBoard {
 
   public reset(): void {
     this._tiles.forEach(row => row.forEach((tile) => tile.value = 0));
+    this.state.set('board', this._tiles.map(row => row.map(tile => tile.value)));
   }
 
   public addTile(cords: ICoords, value: number): IboardActions[] {
