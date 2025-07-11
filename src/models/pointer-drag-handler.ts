@@ -14,6 +14,7 @@ export class PointerDragHandler {
 
   private onPointerDown = (e: PointerEvent) => {
     e.preventDefault();
+    if (e.button !== 0) return;
 
     this.state.set('dragging', true);
     this.createGhostElement(e.clientX, e.clientY);
