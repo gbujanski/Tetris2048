@@ -42,12 +42,13 @@ export class BoardRenderer implements IBoardRenderer {
     tileEl.textContent = newTile.displayValue;
     tileEl.style.backgroundColor = newTile.bgColor;
     tileEl.style.color = newTile.textColor;
+    tileEl.dataset.value = newTile.value.toString();
   }
 
   private async editTile(moveOrMergeAction: IboardMoveAction | IboardMergeAction): Promise<void> {
     const fromTile = this._boardEl.children[moveOrMergeAction.from.row].children[moveOrMergeAction.from.col] as HTMLDivElement;
     const toTile = this._boardEl.children[moveOrMergeAction.to.row].children[moveOrMergeAction.to.col] as HTMLDivElement;
-    const fromTileValue = this._board.tiles[moveOrMergeAction.from.row][moveOrMergeAction.from.col].displayValue;
+    const fromTileValue = fromTile.dataset.value ? parseInt(fromTile.dataset.value) : 0;
 
     if (fromTile.textContent !== '') {
       // update with animation
@@ -74,12 +75,14 @@ export class BoardRenderer implements IBoardRenderer {
       tempElement.remove();
     }
 
-    toTile.textContent = moveOrMergeAction.action === action.Move ? fromTileValue : new Tile(moveOrMergeAction.value).displayValue;
+    const newTile = new Tile(moveOrMergeAction.action === action.Move ? fromTileValue : moveOrMergeAction.value);
+
+    toTile.textContent = newTile.displayValue;
+    toTile.dataset.value = newTile.value.toString();
 
     if (toTile.textContent) {
-      const tile = new Tile(parseInt(toTile.textContent));
-      toTile.style.backgroundColor = tile.bgColor;
-      toTile.style.color = tile.textColor;
+      toTile.style.backgroundColor = newTile.bgColor;
+      toTile.style.color = newTile.textColor;
     }
   }
 
@@ -93,6 +96,7 @@ export class BoardRenderer implements IBoardRenderer {
         const tileEl = document.createElement('div');
         tileEl.className = 'tile';
         tileEl.dataset.col = i.toString();
+        tileEl.dataset.value = tile.value.toString();
 
         if (tile.value !== 0) {
           const newTile = new Tile(tile.value);
