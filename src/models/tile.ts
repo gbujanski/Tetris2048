@@ -2,23 +2,21 @@ import type { ITile } from '../interfaces/tile.interface';
 
 export class Tile implements ITile {
   private _value: number;
-  private tileData: { bgColor: string, textColor: string, displayValue: string };
 
   constructor(value: number = 0) {
     this._value = value;
-    this.tileData = this.getTileData(value);
   }
 
   public get bgColor(): string {
-    return this.tileData.bgColor;
+    return this.getTileData(this.value).bgColor;
   }
 
   public get textColor(): string {
-    return this.tileData.textColor;
+    return this.getTileData(this.value).textColor;
   }
 
   public get displayValue(): string {
-    return this.tileData.displayValue;
+    return this.getTileData(this.value).displayValue;
   }
 
   public get value(): number {
@@ -26,13 +24,11 @@ export class Tile implements ITile {
   }
 
   public set value(value: number) {
-    this._value = value;
+    if (value !== this._value) this._value = value;
   }
 
   public toJson(): { value: number } {
-    return {
-      value: this.value
-    };
+    return { value: this.value };
   }
 
   public static fromJson(json: { value: number }): Tile {
