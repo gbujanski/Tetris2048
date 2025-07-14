@@ -28,7 +28,6 @@ describe('Tile', () => {
     expect(initialTextColor).toBe('#000');
     expect(initialDisplayValue).toBe('2');
 
-    // update tile value
     tile.value = 2097152;
 
     expect(tile.value).toBe(2097152);

@@ -1,7 +1,6 @@
 import { NextTileRenderer } from "../../models/next-tile-renderer";
 import { State } from "../../state";
 
-// Use the mock from the __mocks__ directory
 let nextTileElement: HTMLDivElement;
 
 describe('NextTileRenderer (integration tests with real State)', () => {
