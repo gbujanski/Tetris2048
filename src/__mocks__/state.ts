@@ -1,8 +1,11 @@
-
 export const mockState = {
-  get: jest.fn().mockImplementation((key) => {
+  get: jest.fn().mockImplementation(key => {
     if (key === 'board') {
-      return [[4, 8], [2, 16], [4, 32]];
+      return [
+        [4, 8],
+        [2, 16],
+        [4, 32],
+      ];
     }
     return undefined;
   }),

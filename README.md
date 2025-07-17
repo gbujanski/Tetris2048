@@ -7,23 +7,23 @@ Tetris2048 is a puzzle game that combines mechanics from Tetris and 2048. You pl
 1. Make sure you have [Node.js](https://nodejs.org/) (v16 or newer) and [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) installed.
 2. Clone the repository and install dependencies:
 
-    ```bash
-    git clone https://github.com/your-username/tetris2024.git
-    cd tetris2024
-    npm install
-    # or
-    yarn install
-    ```
+   ```bash
+   git clone https://github.com/your-username/tetris2024.git
+   cd tetris2024
+   npm install
+   # or
+   yarn install
+   ```
 
 3. Build the app for production:
 
-    ```bash
-    npm run build
-    # or
-    yarn build
-    ```
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
 
-    The build output will be in the `dist` directory.
+   The build output will be in the `dist` directory.
 
 ## Development Server
 
@@ -37,14 +37,15 @@ yarn dev
 
 Then open `http://localhost:3000` in your browser.
 
-
 ## This project is currently under development And may contain bugs or incomplete functionality.
 
 #### Working features:
+
 - Add new tile
 - Merge adjacent tiles
 
 #### Planned features:
+
 - Move tiles up after merge if tiles above are empty
 - Merge animations
 - Unit tests

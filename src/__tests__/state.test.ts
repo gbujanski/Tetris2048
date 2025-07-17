@@ -15,12 +15,12 @@ Object.defineProperty(window, 'localStorage', {
 
 describe('State', () => {
   let stateInstance: State;
-  
+
   beforeEach(() => {
     // Reset singleton
-    // @ts-ignore - Access private property for testing
+    // @ts-expect-error - Access private property for testing
     State._instance = undefined;
-    
+
     stateInstance = State.getInstance();
   });
 
@@ -67,7 +67,7 @@ describe('State', () => {
     expect(stateInstance.has('key2')).toBe(true);
 
     stateInstance.clear();
-    
+
     expect(stateInstance.has('key1')).toBe(false);
     expect(stateInstance.has('key2')).toBe(false);
   });
@@ -75,7 +75,7 @@ describe('State', () => {
   test('`subscribe` registers a callback that is called when value changes', () => {
     const mockCallback = jest.fn();
     stateInstance.subscribe('testKey', mockCallback);
-    
+
     stateInstance.set('testKey', 'testValue');
     expect(mockCallback).toHaveBeenCalledWith('testValue', undefined);
 
@@ -86,7 +86,7 @@ describe('State', () => {
   test('unsubscribe removes the callback', () => {
     const mockCallback = jest.fn();
     const unsubscribe = stateInstance.subscribe('testKey', mockCallback);
-    
+
     stateInstance.set('testKey', 'testValue');
     expect(mockCallback).toHaveBeenCalledWith('testValue', undefined);
 
@@ -100,9 +100,12 @@ describe('State', () => {
   test('`delete` saves state to localStorage', () => {
     stateInstance.set('testKey', 'testValue');
     stateInstance.delete('testKey');
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('appState', JSON.stringify([]));
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      'appState',
+      JSON.stringify([])
+    );
   });
-  
+
   test('`clear` removes state from localStorage', () => {
     stateInstance.set('testKey', 'testValue');
     stateInstance.clear();
@@ -110,13 +113,16 @@ describe('State', () => {
   });
 
   test('should restore state from localStorage on instance creation', () => {
-    const savedState = JSON.stringify([["key1", "value1"], ["key2", "value2"]]);
+    const savedState = JSON.stringify([
+      ['key1', 'value1'],
+      ['key2', 'value2'],
+    ]);
     localStorageMock.getItem.mockReturnValue(savedState);
     // Reset singleton
-    // @ts-ignore - Access private property for testing
+    // @ts-expect-error - Access private property for testing
     State._instance = undefined;
     const newStateInstance = State.getInstance();
-    
+
     expect(newStateInstance.get('key1')).toBe('value1');
     expect(newStateInstance.get('key2')).toBe('value2');
   });

@@ -34,7 +34,6 @@ describe('Tile', () => {
     expect(tile.bgColor).not.toBe(initialBgColor);
     expect(tile.textColor).not.toBe(initialTextColor);
     expect(tile.displayValue).not.toBe(initialDisplayValue);
-    expect(tile.displayValue).toBe("2M");
-
+    expect(tile.displayValue).toBe('2M');
   });
 });

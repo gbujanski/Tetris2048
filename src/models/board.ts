@@ -1,10 +1,10 @@
-import type { IBoard } from "../interfaces/board.interface";
+import type { IBoard } from '../interfaces/board.interface';
 import type { ITile } from '../interfaces/tile.interface';
-import type { ICoords } from "../interfaces/cords.interface";
-import type { IboardActions } from "../interfaces/board-actions.interface";
-import { Tile } from "../models/tile";
+import type { ICoords } from '../interfaces/cords.interface';
+import type { IboardActions } from '../interfaces/board-actions.interface';
+import { Tile } from '../models/tile';
 import { action } from '../enums/board-action.enum';
-import { State } from "../state";
+import { State } from '../state';
 export class Board implements IBoard {
   private state = State.getInstance();
   private _tiles: ITile[][];
@@ -25,24 +25,33 @@ export class Board implements IBoard {
   }
 
   public reset(): void {
-    this._tiles.forEach(row => row.forEach((tile) => tile.value = 0));
-    this.state.set('board', this._tiles.map(row => row.map(tile => tile.value)));
+    this._tiles.forEach(row => row.forEach(tile => (tile.value = 0)));
+    this.state.set(
+      'board',
+      this._tiles.map(row => row.map(tile => tile.value))
+    );
   }
 
   public addTile(cords: ICoords, value: number): IboardActions[] {
     const { row, col } = cords;
     this.boardActions = [];
 
-    if (row < 0 || row >= this._tiles.length || col < 0 || col >= this._tiles[row].length) {
-      throw new Error("Index out of bounds");
+    if (
+      row < 0 ||
+      row >= this._tiles.length ||
+      col < 0 ||
+      col >= this._tiles[row].length
+    ) {
+      throw new Error('Index out of bounds');
     }
 
     if (value < 0) {
-      throw new Error("Value cannot be negative");
-    } 
+      throw new Error('Value cannot be negative');
+    }
 
-    const indexOfLastFilledTileInColumn = this.getIndexOfLastFilledTileInColumn(col);
-    
+    const indexOfLastFilledTileInColumn =
+      this.getIndexOfLastFilledTileInColumn(col);
+
     // 1. If the column is empty, add the tile at the top.
     // 2. If the column is full, check if the last filled tile has the same value.
     //    If it has the same value, merge them.
@@ -52,8 +61,8 @@ export class Board implements IBoard {
       this.updateTileData({
         action: action.Add,
         to: { row: 0, col: col },
-        value
-    })
+        value,
+      });
     } else if (indexOfLastFilledTileInColumn === this._tiles.length - 1) {
       if (this._tiles[indexOfLastFilledTileInColumn][col].value == value) {
         // 2. Column is full & last tile has the same value, merge them
@@ -69,27 +78,30 @@ export class Board implements IBoard {
       this.updateTileData({
         action: action.Add,
         to: { row: indexOfLastFilledTileInColumn + 1, col: col },
-        value
+        value,
       });
     }
 
     this.checkForMerge();
 
-    this.state.set('board', this._tiles.map(row => row.map(tile => tile.value)));
+    this.state.set(
+      'board',
+      this._tiles.map(row => row.map(tile => tile.value))
+    );
 
     return this.boardActions;
   }
 
   private isTopTileHaveSameValue(cords: ICoords): boolean {
     const { row, col } = cords;
-    
+
     if (row === 0) return false;
     return this._tiles[row - 1][col].value === this._tiles[row][col].value;
   }
 
   private isLeftTileHaveSameValue(cords: ICoords): boolean {
     const { row, col } = cords;
-    
+
     if (col === 0) return false;
     return this._tiles[row][col - 1].value === this._tiles[row][col].value;
   }
@@ -120,9 +132,14 @@ export class Board implements IBoard {
   private updateTileData(boardAction: IboardActions): void {
     this.boardActions.push({ ...boardAction });
 
-    if (boardAction.action === action.Move) this._tiles[boardAction.to.row][boardAction.to.col].value = this._tiles[boardAction.from.row][boardAction.from.col].value;
-    if (boardAction.action !== action.Move) this._tiles[boardAction.to.row][boardAction.to.col].value = boardAction.value;
-    if (boardAction.action !== action.Add) this._tiles[boardAction.from.row][boardAction.from.col].value = 0;
+    if (boardAction.action === action.Move)
+      this._tiles[boardAction.to.row][boardAction.to.col].value =
+        this._tiles[boardAction.from.row][boardAction.from.col].value;
+    if (boardAction.action !== action.Move)
+      this._tiles[boardAction.to.row][boardAction.to.col].value =
+        boardAction.value;
+    if (boardAction.action !== action.Add)
+      this._tiles[boardAction.from.row][boardAction.from.col].value = 0;
 
     this.tilesToCheckInNextStep.push(boardAction.to);
   }
@@ -140,7 +157,7 @@ export class Board implements IBoard {
           action: action.Merge,
           to: { row: row - 1, col },
           value: this._tiles[row][col].value * 2,
-          from: cords
+          from: cords,
         });
         this.colsToUpdate.push(col);
       } else if (this.isLeftTileHaveSameValue(cords)) {
@@ -148,7 +165,7 @@ export class Board implements IBoard {
           action: action.Merge,
           to: { row, col: col - 1 },
           value: this._tiles[row][col].value * 2,
-          from: cords
+          from: cords,
         });
         this.colsToUpdate.push(col);
       } else if (this.isRightTileHaveSameValue(cords)) {
@@ -156,7 +173,7 @@ export class Board implements IBoard {
           action: action.Merge,
           to: cords,
           value: this._tiles[row][col].value * 2,
-          from: { row, col: col + 1 }
+          from: { row, col: col + 1 },
         });
         this.colsToUpdate.push(col + 1);
       } else if (this.isBottomTileHaveSameValue(cords)) {
@@ -164,11 +181,10 @@ export class Board implements IBoard {
           action: action.Merge,
           to: { row: row + 1, col },
           value: this._tiles[row][col].value * 2,
-          from: cords
+          from: cords,
         });
         this.colsToUpdate.push(col);
       }
-      
     });
 
     this.moveTileIfTopTileIsEmpty();
@@ -180,13 +196,13 @@ export class Board implements IBoard {
       return;
     }
 
-    this.colsToUpdate.forEach((col) => {
+    this.colsToUpdate.forEach(col => {
       this._tiles.forEach((_, rowIndex) => {
         if (rowIndex > 0 && this._tiles[rowIndex - 1][col].value === 0) {
           this.updateTileData({
             action: action.Move,
             to: { row: rowIndex - 1, col },
-            from: { row: rowIndex, col }
+            from: { row: rowIndex, col },
           });
         }
       });
@@ -205,7 +221,10 @@ export class Board implements IBoard {
     const board = Array.from({ length: sizeY }, () =>
       Array.from({ length: sizeX }, () => new Tile(0))
     );
-    this.state.set('board', board.map(row => row.map(tile => tile.value)));
+    this.state.set(
+      'board',
+      board.map(row => row.map(tile => tile.value))
+    );
     return board;
   }
 }

@@ -25,7 +25,7 @@ export class PointerDragHandler {
 
   private onPointerMove = (e: PointerEvent) => {
     if (!this.state.get('dragging') || !this.ghostEl) return;
-    
+
     this.setGhostElementPosition(e.clientX, e.clientY);
   };
 

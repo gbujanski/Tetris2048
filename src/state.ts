@@ -68,7 +68,10 @@ export class State {
   }
 
   private saveStateToLocalStorage(): void {
-    localStorage.setItem('appState', JSON.stringify(Array.from(this.state.entries())));
+    localStorage.setItem(
+      'appState',
+      JSON.stringify(Array.from(this.state.entries()))
+    );
   }
 
   private loadStateFromLocalStorage(): void {

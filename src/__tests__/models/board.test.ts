@@ -1,5 +1,5 @@
-import { Board } from "../../models/board";
-import { State } from "../../state";
+import { Board } from '../../models/board';
+import { State } from '../../state';
 
 describe('Board', () => {
   beforeEach(() => {
@@ -33,18 +33,28 @@ describe('Board', () => {
 
   test('should throw error for out of bounds coordinates', () => {
     const board = new Board(4, 4);
-    expect(() => board.addTile({ row: -1, col: 0 }, 2)).toThrow("Index out of bounds");
-    expect(() => board.addTile({ row: 4, col: 0 }, 2)).toThrow("Index out of bounds");
-    expect(() => board.addTile({ row: 0, col: -1 }, 2)).toThrow("Index out of bounds");
-    expect(() => board.addTile({ row: 0, col: 4 }, 2)).toThrow("Index out of bounds");
+    expect(() => board.addTile({ row: -1, col: 0 }, 2)).toThrow(
+      'Index out of bounds'
+    );
+    expect(() => board.addTile({ row: 4, col: 0 }, 2)).toThrow(
+      'Index out of bounds'
+    );
+    expect(() => board.addTile({ row: 0, col: -1 }, 2)).toThrow(
+      'Index out of bounds'
+    );
+    expect(() => board.addTile({ row: 0, col: 4 }, 2)).toThrow(
+      'Index out of bounds'
+    );
   });
 
   test('should throw error for negative tile value', () => {
     const board = new Board(4, 4);
-    expect(() => board.addTile({ row: 0, col: 0 }, -2)).toThrow("Value cannot be negative");
+    expect(() => board.addTile({ row: 0, col: 0 }, -2)).toThrow(
+      'Value cannot be negative'
+    );
   });
 
-    test('should add new tile below the last filled tile in a column', () => {
+  test('should add new tile below the last filled tile in a column', () => {
     const board = new Board(4, 4);
     board.addTile({ row: 0, col: 0 }, 2);
     board.addTile({ row: 3, col: 0 }, 4);
@@ -60,10 +70,9 @@ describe('Board', () => {
     const board = new Board(4, 4);
     board.addTile({ row: 0, col: 0 }, 2);
     board.addTile({ row: 1, col: 0 }, 2);
-    
+
     expect(board.tiles[0][0].value).toBe(4);
     expect(board.tiles[1][0].value).toBe(0);
-
   });
 
   test('should merge tiles with the same value if new tile is added on the left side', () => {
@@ -73,10 +82,9 @@ describe('Board', () => {
 
     expect(board.tiles[0][0].value).toBe(4);
     expect(board.tiles[0][1].value).toBe(0);
-
   });
 
-    test('should merge tiles with the same value if new tile is added on the right side', () => {
+  test('should merge tiles with the same value if new tile is added on the right side', () => {
     const board = new Board(4, 4);
     board.addTile({ row: 0, col: 1 }, 2);
     board.addTile({ row: 0, col: 2 }, 2);
@@ -100,16 +108,21 @@ describe('Board', () => {
     const board = new Board(4, 4);
     board.addTile({ row: 0, col: 0 }, 2);
     board.addTile({ row: 1, col: 0 }, 4);
-    
+
     expect(board.tiles[0][0].value).toBe(2);
     expect(board.tiles[1][0].value).toBe(4);
   });
 
   test('should recreate the board from the state', () => {
     const state = State.getInstance();
-    state.set('board', [[2, 0, 0, 0], [0, 2, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]]);
+    state.set('board', [
+      [2, 0, 0, 0],
+      [0, 2, 0, 0],
+      [0, 0, 2, 0],
+      [0, 0, 0, 2],
+    ]);
     const board = new Board(4, 4);
-    
+
     expect(board.tiles[0][0].value).toBe(2);
     expect(board.tiles[1][1].value).toBe(2);
     expect(board.tiles[2][2].value).toBe(2);
@@ -119,9 +132,14 @@ describe('Board', () => {
   test('should update the state after adding a tile', () => {
     const board = new Board(4, 4);
     board.addTile({ row: 0, col: 0 }, 2);
-    
+
     const state = State.getInstance();
-    expect(state.get('board')).toEqual([[2, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]);
+    expect(state.get('board')).toEqual([
+      [2, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]);
   });
 
   test('should update the state after merging tiles', () => {
@@ -129,9 +147,19 @@ describe('Board', () => {
     const state = State.getInstance();
 
     board.addTile({ row: 0, col: 0 }, 2);
-    expect(state.get('board')).toEqual([[2, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]);
+    expect(state.get('board')).toEqual([
+      [2, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]);
 
     board.addTile({ row: 0, col: 1 }, 2);
-    expect(state.get('board')).toEqual([[4, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]);
+    expect(state.get('board')).toEqual([
+      [4, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]);
   });
 });

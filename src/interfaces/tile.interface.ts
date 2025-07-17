@@ -6,4 +6,3 @@ export interface ITile {
   get displayValue(): string;
   toJson(): { value: number };
 }
- 

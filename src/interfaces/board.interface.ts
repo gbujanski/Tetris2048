@@ -7,4 +7,3 @@ export interface IBoard {
   addTile(cords: ICoords, value: number): IboardActions[];
   reset(): void;
 }
- 

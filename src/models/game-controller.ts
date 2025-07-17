@@ -1,7 +1,7 @@
-import type { IBoard } from "../interfaces/board.interface";
-import type { IBoardRenderer } from "../interfaces/board-renderer.interface";
-import type { ICoords } from "../interfaces/cords.interface";
-import { State } from "../state";
+import type { IBoard } from '../interfaces/board.interface';
+import type { IBoardRenderer } from '../interfaces/board-renderer.interface';
+import type { ICoords } from '../interfaces/cords.interface';
+import { State } from '../state';
 
 export class GameController {
   private board: IBoard;
@@ -27,17 +27,21 @@ export class GameController {
   }
 
   private subscribeForFutureChanges(): void {
-    this.state.subscribe('dropTarget', (target) => {
+    this.state.subscribe('dropTarget', target => {
       const col = target.dataset.col ? parseInt(target.dataset.col) : 0;
-      const row = target.parentElement?.dataset.row ? parseInt(target.parentElement.dataset.row) : 0;
+      const row = target.parentElement?.dataset.row
+        ? parseInt(target.parentElement.dataset.row)
+        : 0;
       const droppedTileValue = parseInt(this.state.get('nextTile'));
-      
+
       this.addTile({ row, col }, droppedTileValue);
     });
   }
 
   private onResetButtonClick(): void {
-    const resetButton = document.getElementById('reset-btn') as HTMLButtonElement;
+    const resetButton = document.getElementById(
+      'reset-btn'
+    ) as HTMLButtonElement;
     resetButton.addEventListener('click', () => {
       this.reset();
     });

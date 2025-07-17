@@ -20,4 +20,7 @@ export interface IboardMergeAction {
   value: number;
 }
 
-export type IboardActions = IboardAddAction | IboardMoveAction | IboardMergeAction;
+export type IboardActions =
+  | IboardAddAction
+  | IboardMoveAction
+  | IboardMergeAction;

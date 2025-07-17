@@ -1,8 +1,13 @@
-import type { IBoard } from "../interfaces/board.interface";
-import type { IBoardRenderer } from "../interfaces/board-renderer.interface";
-import type { IboardActions, IboardAddAction, IboardMergeAction, IboardMoveAction } from "../interfaces/board-actions.interface";
-import { action } from "../enums/board-action.enum";
-import { Tile } from "./tile";
+import type { IBoard } from '../interfaces/board.interface';
+import type { IBoardRenderer } from '../interfaces/board-renderer.interface';
+import type {
+  IboardActions,
+  IboardAddAction,
+  IboardMergeAction,
+  IboardMoveAction,
+} from '../interfaces/board-actions.interface';
+import { action } from '../enums/board-action.enum';
+import { Tile } from './tile';
 
 export class BoardRenderer implements IBoardRenderer {
   private _board: IBoard;
@@ -15,7 +20,7 @@ export class BoardRenderer implements IBoardRenderer {
   }
 
   public async updateBoard(boardActions: IboardActions[]): Promise<void> {
-   for (const boardAction of boardActions) {
+    for (const boardAction of boardActions) {
       switch (boardAction.action) {
         case action.Add:
           this.addTile(boardAction);
@@ -36,7 +41,9 @@ export class BoardRenderer implements IBoardRenderer {
   }
 
   private addTile(addAction: IboardAddAction): void {
-    const tileEl = this._boardEl.children[addAction.to.row].children[addAction.to.col] as HTMLDivElement;
+    const tileEl = this._boardEl.children[addAction.to.row].children[
+      addAction.to.col
+    ] as HTMLDivElement;
     const newTile = new Tile(addAction.value);
 
     tileEl.textContent = newTile.displayValue;
@@ -45,10 +52,17 @@ export class BoardRenderer implements IBoardRenderer {
     tileEl.dataset.value = newTile.value.toString();
   }
 
-  private async editTile(moveOrMergeAction: IboardMoveAction | IboardMergeAction): Promise<void> {
-    const fromTile = this._boardEl.children[moveOrMergeAction.from.row].children[moveOrMergeAction.from.col] as HTMLDivElement;
-    const toTile = this._boardEl.children[moveOrMergeAction.to.row].children[moveOrMergeAction.to.col] as HTMLDivElement;
-    const fromTileValue = fromTile.dataset.value ? parseInt(fromTile.dataset.value) : 0;
+  private async editTile(
+    moveOrMergeAction: IboardMoveAction | IboardMergeAction
+  ): Promise<void> {
+    const fromTile = this._boardEl.children[moveOrMergeAction.from.row]
+      .children[moveOrMergeAction.from.col] as HTMLDivElement;
+    const toTile = this._boardEl.children[moveOrMergeAction.to.row].children[
+      moveOrMergeAction.to.col
+    ] as HTMLDivElement;
+    const fromTileValue = fromTile.dataset.value
+      ? parseInt(fromTile.dataset.value)
+      : 0;
 
     if (fromTile.textContent !== '') {
       // update with animation
@@ -72,11 +86,15 @@ export class BoardRenderer implements IBoardRenderer {
       fromTile.style.backgroundColor = '';
 
       await this.sleep(300);
-      
+
       tempElement.remove();
     }
 
-    const newTile = new Tile(moveOrMergeAction.action === action.Move ? fromTileValue : moveOrMergeAction.value);
+    const newTile = new Tile(
+      moveOrMergeAction.action === action.Move
+        ? fromTileValue
+        : moveOrMergeAction.value
+    );
 
     toTile.textContent = newTile.displayValue;
     toTile.dataset.value = newTile.value.toString();
@@ -101,7 +119,7 @@ export class BoardRenderer implements IBoardRenderer {
 
         if (tile.value !== 0) {
           const newTile = new Tile(tile.value);
-          
+
           tileEl.textContent = newTile.displayValue;
           tileEl.style.backgroundColor = newTile.bgColor;
           tileEl.style.color = newTile.textColor;

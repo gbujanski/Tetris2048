@@ -1,4 +1,4 @@
-import { NextTileRenderer } from "../../models/next-tile-renderer";
+import { NextTileRenderer } from '../../models/next-tile-renderer';
 
 let nextTileElement: HTMLDivElement;
 let nextTileRenderer: NextTileRenderer | null = null;
