@@ -71,7 +71,8 @@ export class BoardRenderer implements IBoardRenderer {
       fromTile.textContent = '';
       fromTile.style.backgroundColor = '';
 
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await this.sleep(300);
+      
       tempElement.remove();
     }
 
@@ -111,5 +112,9 @@ export class BoardRenderer implements IBoardRenderer {
 
       this._boardEl.appendChild(rowEl);
     });
+  }
+
+  private async sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
