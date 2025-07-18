@@ -179,9 +179,9 @@ export class Board implements IBoard {
       } else if (this.isBottomTileHaveSameValue(cords)) {
         this.updateTileData({
           action: action.Merge,
-          to: { row: row + 1, col },
+          to: cords,
           value: this._tiles[row][col].value * 2,
-          from: cords,
+          from: { row: row + 1, col },
         });
         this.colsToUpdate.push(col);
       }
