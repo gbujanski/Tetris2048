@@ -4,6 +4,8 @@ import { State } from '../../state';
 let nextTileElement: HTMLDivElement;
 
 describe('NextTileRenderer (integration tests with real State)', () => {
+  let warnMock: jest.SpyInstance;
+
   beforeAll(() => {
     const mockBoard = [
       [2, 4],
@@ -11,6 +13,8 @@ describe('NextTileRenderer (integration tests with real State)', () => {
     ];
     const state = State.getInstance();
     state.set('board', mockBoard);
+
+    warnMock = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   beforeEach(() => {
@@ -25,6 +29,7 @@ describe('NextTileRenderer (integration tests with real State)', () => {
 
   afterAll(() => {
     State.getInstance().clear();
+    warnMock.mockRestore();
   });
 
   test('should update next tile display when board changes', () => {
@@ -47,5 +52,26 @@ describe('NextTileRenderer (integration tests with real State)', () => {
     ]);
 
     expect(spyUpdateNextTileDisplay).toHaveBeenCalledTimes(2);
+  });
+
+  test('should initialize next tile with value from state', () => {
+    const state = State.getInstance();
+    state.set('nextTile', 4);
+
+    let nextTileRenderer = new NextTileRenderer();
+    expect(nextTileRenderer['nextTileEl'].textContent).toBe('4');
+
+    state.set('nextTile', 128);
+    nextTileRenderer = new NextTileRenderer();
+    expect(nextTileRenderer['nextTileEl'].textContent).toBe('128');
+  });
+
+  test('should reset next tile to 0 if invalid value in state', () => {
+    const state = State.getInstance();
+    state.set('nextTile', 3);
+
+    const nextTileRenderer = new NextTileRenderer();
+    const newTileValue = nextTileRenderer['nextTileEl'].textContent;
+    expect(Math.log2(parseInt(newTileValue!)) % 1).toBe(0);
   });
 });

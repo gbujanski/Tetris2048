@@ -8,7 +8,9 @@ export class NextTileRenderer implements INextTileRenderer {
 
   constructor() {
     this.nextTileEl = document.getElementById('next-tile') as HTMLDivElement;
-    this.updateNextTileDisplay();
+
+    let nextTileValue = this.getInitialNextTileValue();
+    this.updateNextTileDisplay(nextTileValue);
     this.subscribeForFutureChanges();
   }
 
@@ -17,9 +19,29 @@ export class NextTileRenderer implements INextTileRenderer {
       this.updateNextTileDisplay();
     });
   }
+  private getInitialNextTileValue(): number {
+    if (this.state.has('nextTile')) {
+      const valueFromState = this.state.get('nextTile');
 
-  private updateNextTileDisplay(): void {
-    const nextTileValue = this.getNextTileValue();
+      if (valueFromState > 0 && Math.log2(valueFromState) % 1 === 0) {
+        return valueFromState;
+      } else {
+        console.warn(
+          'Invalid next tile value in state, resetting to 0. Expected a power of two.'
+        );
+        this.state.delete('nextTile');
+      }
+    }
+    return 0;
+  }
+
+  private updateNextTileDisplay(value: number = 0): void {
+    let nextTileValue = value;
+
+    if (!nextTileValue) {
+      nextTileValue = this.getNextTileValue();
+    }
+
     this.state.set('nextTile', nextTileValue);
     const newTile = new Tile(nextTileValue);
 
